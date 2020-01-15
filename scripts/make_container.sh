@@ -5,5 +5,6 @@ sudo docker build --no-cache \
 		  --build-arg VERSION="TODO" \
    		  -f Dockerfile \
 		  -t "$DOCKER_REPO"/"$DOCKER_NAME":"$DOCKER_TAG" \
+		  -t "$DOCKER_REPO"/"$DOCKER_NAME":"$TRAVIS_JOB_ID" \
 		  .
 		  
