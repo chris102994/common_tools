@@ -2,9 +2,6 @@
 
 # Tools script to get various bits of information.
 
-set -u # Unset Variables are an error
-set -e # Exit on error
-
 # These 3 flags can be set as an ENV variable OR the git commit message to bump the correlating version
 # BUMP_MAJOR
 # BUMP_MINOR
@@ -34,7 +31,7 @@ if [ "${BUMP_MINOR:-UNSET}" != "UNSET" ] && [ "${BUMP_MINOR,,}" = true ] || [[ "
     echo "Minor Version Bumped to: $MINOR_VERSION"
 fi
 
-if [ "${BUMP_PATCH:-UNSET}" != "UNSET" ] && [ "${BUMP_PATCH,,}" = true ] || || [[ "$GIT_MESSAGE" =~ .*"BUMP_PATCH".* ]]; then
+if [ "${BUMP_PATCH:-UNSET}" != "UNSET" ] && [ "${BUMP_PATCH,,}" = true ] || [[ "$GIT_MESSAGE" =~ .*"BUMP_PATCH".* ]]; then
     ((PATCH_VERSION+=1))
     echo "Patch Bumped to: $PATCH_VERSION"
 fi
