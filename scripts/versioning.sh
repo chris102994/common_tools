@@ -44,9 +44,12 @@ fi
 # Just some handy tools we can export.
 DATE=$(date)
 EPOCH=$(date "+%s")
-GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+# This ensures that if we're building on travis ci we will get the proper branch -- Detached git state.
+GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD | sed "s#HEAD#$TRAVIS_BRANCH#i")
 GIT_COMMIT=$(git rev-parse --short HEAD)
 GIT_REPO=$(git config --get remote.origin.url | grep -Po "(?<=git@github\.com:)(.*?)(?=.git)" | sed 's#.*/##')
+# Sometimes this doesn't work. This will assume the name is that of the containing folder.
+GIT_REPO="${GIT_REPO:-$(basename $(git rev-parse --show-toplevel))}"
 GIT_VERSION="v${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}"
 
 # We need to know in the build process if we bumped. This variable lets us ensure it gets pushed properly.
