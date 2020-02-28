@@ -7,10 +7,6 @@
 # BUMP_MINOR
 # BUMP_PATCH
 
-# Default Versioning
-MAJOR_VERSION=1
-MINOR_VERSION=0
-PATCH_VERSION=0
 GIT_VERSION=$(git describe --tags)
 if [ $? -eq 0 ]; then
     GIT_VERSION=$(echo $GIT_VERSION |  egrep -o '[0-9]*\.[0-9]*\.[0-9]*' )
@@ -19,8 +15,13 @@ if [ $? -eq 0 ]; then
     PATCH_VERSION=$(echo $GIT_VERSION | cut -d. -f3)
 fi
 
-GIT_MESSAGE=$(git show -s --format=%s | tr a-z A-Z)
+# Default Versioning
+MAJOR_VERSION=${MAJOR_VERSION:-1}
+MINOR_VERSION=${MINOR_VERSION:-0}
+PATCH_VERSION=${PATCH_VERSION:-0}
+
 # Check if ANY bump's are set in the ENV or MSG AND IF they ARE then Bump that version
+GIT_MESSAGE=$(git show -s --format=%s | tr a-z A-Z)
 if [ "${BUMP_MAJOR:-UNSET}" != "UNSET" ] && [ "${BUMP_MAJOR,,}" = true ] || [[ "$GIT_MESSAGE" =~ .*"BUMP_MAJOR".* ]]; then
     BUMP_MAJOR=true
     ((MAJOR_VERSION+=1))
@@ -39,25 +40,25 @@ if [ "${BUMP_PATCH:-UNSET}" != "UNSET" ] && [ "${BUMP_PATCH,,}" = true ] || [[ "
     echo "Patch Bumped to: $PATCH_VERSION"
 fi
 
+# We need to know in the build process if we bumped. This variable lets us ensure it gets pushed properly.
 if [ "$BUMP_MAJOR" = true ] || [ "$BUMP_MINOR" = true ] || [ "$BUMP_PATCH" = true ]; then
     PUSH_TAG=true
-else
-    PUSH_TAG=false
 fi
 
 # Just some handy tools we can export.
-GIT_VERSION="${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}"
+DATE=$(date)
+EPOCH=$(date "+%s")
 GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 GIT_COMMIT=$(git rev-parse --short HEAD)
 GIT_REPO=$(git config --get remote.origin.url | grep -Po "(?<=git@github\.com:)(.*?)(?=.git)" | sed 's#.*/##')
-EPOCH=$(date "+%s")
-DATE=$(date)
+GIT_VERSION="${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}"
 
-export PUSH_TAG=$PUSH_TAG
-export GIT_VERSION=$GIT_VERSION
+# Export everything
+export DATE=$DATE
+export EPOCH=$EPOCH
 export GIT_BRANCH=$GIT_BRANCH
 export GIT_COMMIT=$GIT_COMMIT
 export GIT_REPO=$GIT_REPO
-export EPOCH=$EPOCH
-export DATE=$DATE
+export GIT_VERSION=$GIT_VERSION
 export IMAGE_TAG=$IMAGE_TAG-v$GIT_VERSION
+export PUSH_TAG=${PUSH_TAG:-false}
