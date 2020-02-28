@@ -22,18 +22,27 @@ fi
 GIT_MESSAGE=$(git show -s --format=%s | tr a-z A-Z)
 # Check if ANY bump's are set in the ENV or MSG AND IF they ARE then Bump that version
 if [ "${BUMP_MAJOR:-UNSET}" != "UNSET" ] && [ "${BUMP_MAJOR,,}" = true ] || [[ "$GIT_MESSAGE" =~ .*"BUMP_MAJOR".* ]]; then
+    BUMP_MAJOR=true
     ((MAJOR_VERSION+=1))
     echo "Major Version Bumped to: $MAJOR_VERSION"
 fi
 
 if [ "${BUMP_MINOR:-UNSET}" != "UNSET" ] && [ "${BUMP_MINOR,,}" = true ] || [[ "$GIT_MESSAGE" =~ .*"BUMP_MINOR".* ]]; then
+    BUMP_MINOR=true
     ((MINOR_VERSION+=1))
     echo "Minor Version Bumped to: $MINOR_VERSION"
 fi
 
 if [ "${BUMP_PATCH:-UNSET}" != "UNSET" ] && [ "${BUMP_PATCH,,}" = true ] || [[ "$GIT_MESSAGE" =~ .*"BUMP_PATCH".* ]]; then
+    BUMP_PATCH=true
     ((PATCH_VERSION+=1))
     echo "Patch Bumped to: $PATCH_VERSION"
+fi
+
+if [ "$BUMP_MAJOR" = true ] || [ "$BUMP_MINOR" = true ] || [ "$BUMP_PATCH" = true ]; then
+    PUSH_TAG=true
+else
+    PUSH_TAG=false
 fi
 
 # Just some handy tools we can export.
@@ -44,10 +53,11 @@ GIT_REPO=$(git config --get remote.origin.url | grep -Po "(?<=git@github\.com:)(
 EPOCH=$(date "+%s")
 DATE=$(date)
 
+export PUSH_TAG=$PUSH_TAG
 export GIT_VERSION=$GIT_VERSION
 export GIT_BRANCH=$GIT_BRANCH
 export GIT_COMMIT=$GIT_COMMIT
 export GIT_REPO=$GIT_REPO
 export EPOCH=$EPOCH
 export DATE=$DATE
-export IMAGE_TAG=$IMAGE_TAG-$GIT_VERSION
+export IMAGE_TAG=$IMAGE_TAG-v$GIT_VERSION
