@@ -25,24 +25,20 @@ GIT_MESSAGE=$(git show -s --format=%s | tr a-z A-Z)
 if [ "${BUMP_MAJOR:-UNSET}" != "UNSET" ] && [ "${BUMP_MAJOR,,}" = true ] || [[ "$GIT_MESSAGE" =~ .*"BUMP_MAJOR".* ]]; then
     BUMP_MAJOR=true
     ((MAJOR_VERSION+=1))
+    MINOR_VERSION=0
+    PATCH_VERSION=0
     echo "Major Version Bumped to: $MAJOR_VERSION"
-fi
-
-if [ "${BUMP_MINOR:-UNSET}" != "UNSET" ] && [ "${BUMP_MINOR,,}" = true ] || [[ "$GIT_MESSAGE" =~ .*"BUMP_MINOR".* ]]; then
+elif [ "${BUMP_MINOR:-UNSET}" != "UNSET" ] && [ "${BUMP_MINOR,,}" = true ] || [[ "$GIT_MESSAGE" =~ .*"BUMP_MINOR".* ]]; then
     BUMP_MINOR=true
     ((MINOR_VERSION+=1))
+    PATCH_VERSION=0
     echo "Minor Version Bumped to: $MINOR_VERSION"
-fi
-
-if [ "${BUMP_PATCH:-UNSET}" != "UNSET" ] && [ "${BUMP_PATCH,,}" = true ] || [[ "$GIT_MESSAGE" =~ .*"BUMP_PATCH".* ]]; then
+elif [ "${BUMP_PATCH:-UNSET}" != "UNSET" ] && [ "${BUMP_PATCH,,}" = true ] || [[ "$GIT_MESSAGE" =~ .*"BUMP_PATCH".* ]]; then
     BUMP_PATCH=true
     ((PATCH_VERSION+=1))
     echo "Patch Bumped to: $PATCH_VERSION"
-fi
-
-# We need to know in the build process if we bumped. This variable lets us ensure it gets pushed properly.
-if [ "$BUMP_MAJOR" = true ] || [ "$BUMP_MINOR" = true ] || [ "$BUMP_PATCH" = true ]; then
-    PUSH_TAG=true
+else
+    echo "Non-Versioned build. Keeping previous version."
 fi
 
 # Just some handy tools we can export.
@@ -51,7 +47,14 @@ EPOCH=$(date "+%s")
 GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 GIT_COMMIT=$(git rev-parse --short HEAD)
 GIT_REPO=$(git config --get remote.origin.url | grep -Po "(?<=git@github\.com:)(.*?)(?=.git)" | sed 's#.*/##')
-GIT_VERSION="${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}"
+GIT_VERSION="v${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}"
+
+# We need to know in the build process if we bumped. This variable lets us ensure it gets pushed properly.
+if [ "$BUMP_MAJOR" = true ] || [ "$BUMP_MINOR" = true ] || [ "$BUMP_PATCH" = true ]; then
+    PUSH_TAG=true
+else
+    GIT_VERSION="$GIT_VERSION-testing"
+fi
 
 # Export everything
 export DATE=$DATE
@@ -61,4 +64,7 @@ export GIT_COMMIT=$GIT_COMMIT
 export GIT_REPO=$GIT_REPO
 export GIT_VERSION=$GIT_VERSION
 export IMAGE_TAG=$IMAGE_TAG-v$GIT_VERSION
+export MAJOR_VERSION=$MAJOR_VERSION
+export MINOR_VERSION=$MINOR_VERSION
+export PATCH_VERSION=$PATCH_VERSION
 export PUSH_TAG=${PUSH_TAG:-false}
