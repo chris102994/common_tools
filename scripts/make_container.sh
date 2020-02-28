@@ -12,4 +12,5 @@ sudo docker build \
   --build-arg VCS_REF="$GIT_COMMIT" \
   -f "$DOCKER_FILE" \
   -t "$DOCKER_REPO"/"$DOCKER_NAME":"$IMAGE_TAG" \
+  -t "$DOCKER_REPO"/"$DOCKER_NAME":"$LATEST_TAG" \
   .
