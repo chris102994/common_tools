@@ -1,8 +1,5 @@
 #!/bin/bash
 
-set -u # Unset Variables are an error
-set -e # Exit on error
-
 usage() {
 	echo "usage: $(basename "$0") /path/to/env/file [/path/to/env/file...]"
 	exit 1
