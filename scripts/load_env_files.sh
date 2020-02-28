@@ -16,6 +16,8 @@ for FILE in "$@"
 do
 	if [ -f "$FILE" ]; then
 		export $(egrep -v '^#' "$FILE" | xargs)
+		echo "Exporting the following vars from $FILE:"
+		cat $FILE
 	else
 		echo "$FILE isn't a file."
 	fi
