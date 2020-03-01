@@ -2,6 +2,9 @@
 
 Builds and deploys containers and supports versioning.
 
+## Example CI Scripts to use this submodule:
+* [.travis.yml](https://github.com/chris102994/common_tools/blob/master/examples/.travis.yml)
+
 ## Scripts:
 
 ### [.ci_vars.yml](https://github.com/chris102994/common_tools/blob/master/scripts/.ci_vars.yml)

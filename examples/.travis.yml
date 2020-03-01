@@ -1,0 +1,44 @@
+#
+# Example Travis CI file to build, test and push docker images to the Docker Hub.
+#
+
+language: generic
+
+os:
+  - linux
+
+services:
+  - docker
+
+git:
+  submodules: false
+
+env:
+  global:
+  - DOCKER_REPO=christopher102994
+  - DOCKER_NAME=sample-container
+jobs:
+  include:
+  - stage: Sample Container
+    script:
+      # Ensure we update this submodule!
+      - git submodule update --init --recursive
+      # In a multi-stage build we will want different environments to build from.
+      - source tools/scripts/load_env_files.sh path/to/env_file.env
+      # Ensure we have proper versioning.
+      - source tools/scripts/versioning.sh
+      # Make the container now that we have everything loaded. 
+      - tools/scripts/make_container.sh
+    deploy:
+        provider: script
+        # Finally push the container to the docker registry.
+        script: tools/scripts/push_to_registry.sh
+  - stage: Git Tag
+    script: 
+      # Ensure we update this submodule!
+      - git submodule update --init --recursive
+      # Ensure we have proper versioning.
+      - source tools/scripts/versioning.sh
+      # Depending on the results of the versioning script we will need to
+      # Push the NEW updated tag to github.
+      - tools/scripts/push_git_tag.sh
