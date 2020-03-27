@@ -74,7 +74,7 @@ Test Container & push results	(-t, --testc): ${TEST_CONTAINER}
 # Submodule could be named anything - Let's be smart.
 SCRIPTS_DIR=$(grep -B1 "url = https://github.com/chris102994/common_tools" .gitmodules | grep path | sed 's#.*= ##')/scripts
 # Load the env files
-source "${SCRIPTS_DIR}"/load_env_files.sh "$ENV"
+source "${SCRIPTS_DIR}"/load_env_files.sh ${ENV}
 
 # Version
 source "${SCRIPTS_DIR}"/versioning.sh || true
