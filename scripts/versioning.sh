@@ -1,5 +1,5 @@
 #!/bin/bash
-
+echo "Versioning from git tags."
 # Tools script to get various bits of information.
 
 # These 3 flags can be set as an ENV variable OR the git commit message to bump the correlating version
