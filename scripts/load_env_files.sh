@@ -12,7 +12,7 @@ fi
 for FILE in "$@"
 do
 	if [ -f "${FILE}" ]; then
-		export "$(grep -Ev '^#' "${FILE}" | xargs)"
+		export $(grep -Ev '^#' "${FILE}" | xargs)
 		echo -e "Exporting the following vars from ${FILE}:\n$(cat "${FILE}")"
 	else
 		echo "${FILE} isn't a file."
